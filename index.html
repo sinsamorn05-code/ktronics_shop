@@ -202,6 +202,22 @@
   .splash-feature{text-align:center; font-size:10px; color:#ccc; display:flex; flex-direction:column; align-items:center; gap:6px;}
   .splash-feature .fi{font-size:18px;}
 
+  /* Payment instructions */
+  .pay-card{background:#fff; border:1px solid var(--gray-line); border-radius:12px; padding:16px; margin-bottom:14px;}
+  .pay-card .row{display:flex; justify-content:space-between; font-size:13px; padding:6px 0; color:var(--gray-text);}
+  .pay-card .row span:last-child{color:var(--dark-text); font-weight:700;}
+  .pay-amount{font-size:26px; font-weight:800; color:var(--red); text-align:center; margin:10px 0;}
+  .qr-box{width:100%; max-width:220px; margin:0 auto 14px; border:1px solid var(--gray-line); border-radius:12px; padding:10px; background:#fff;}
+  .qr-box img{width:100%; display:block; border-radius:6px;}
+  .pay-note{font-size:12px; color:var(--gray-text); text-align:center; margin-bottom:16px; line-height:1.5;}
+  .pay-missing{background:#fff4e5; color:#8a5300; border-radius:10px; padding:12px; font-size:12px; margin-bottom:14px; text-align:center;}
+  .payment-status-pill{font-size:10px; font-weight:700; padding:3px 10px; border-radius:12px;}
+  .payment-status-Pending{background:#fff4e5; color:#e08a00;}
+  .payment-status-AwaitingPayment{background:#fdeaea; color:#e8272c;}
+  .payment-status-AwaitingVerification{background:#e6f0ff; color:#2563eb;}
+  .payment-status-Paid{background:#e8f9ec; color:#22c55e;}
+  .payment-status-Failed{background:#fdeaea; color:#e8272c;}
+
   .empty-state{text-align:center; padding:60px 20px; color:var(--gray-text); font-size:13px;}
   .toast{
     position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:#141414; color:#fff;
@@ -317,9 +333,8 @@
         <div class="step"><div class="dot">3</div>Confirm</div>
       </div>
       <div class="section-title" style="margin-top:0;">Payment Method</div>
-      <div class="radio-card selected" onclick="selectPayment(this,'ABA Pay')"><div class="radio-dot"></div> ABA Pay</div>
-      <div class="radio-card" onclick="selectPayment(this,'Wing')"><div class="radio-dot"></div> Wing</div>
-      <div class="radio-card" onclick="selectPayment(this,'Credit / Debit Card')"><div class="radio-dot"></div> Credit / Debit Card</div>
+      <div class="radio-card selected" onclick="selectPayment(this,'Bank Transfer')"><div class="radio-dot"></div> Bank Transfer</div>
+      <div class="radio-card" onclick="selectPayment(this,'KHQR')"><div class="radio-dot"></div> KHQR</div>
       <div class="radio-card" onclick="selectPayment(this,'Cash on Delivery')"><div class="radio-dot"></div> Cash on Delivery</div>
       <div class="form-group" style="margin-top:16px;">
         <label>Promo Code</label>
@@ -330,6 +345,12 @@
       </div>
       <button class="btn-red" onclick="placeOrder()">Continue</button>
     </div>
+  </section>
+
+  <!-- ===== PAYMENT INSTRUCTIONS (Bank Transfer / KHQR) ===== -->
+  <section class="screen" id="screen-payinstructions">
+    <div class="topbar"><div class="brand">Complete Payment</div></div>
+    <div style="padding-top:14px;" id="payinstructions-content"></div>
   </section>
 
   <!-- ===== ORDER CONFIRMATION ===== -->
@@ -397,10 +418,12 @@ let state = {
   currentProduct: null,
   selectedColor: null,
   deliveryFee: 0,
-  paymentMethod: 'ABA Pay',
+  paymentMethod: 'Bank Transfer',
   telegramUserId: null,
   customerName: '',
-  orders: []
+  orders: [],
+  paymentSettings: null,
+  currentOrder: null
 };
 
 /* ====================== TELEGRAM INIT ====================== */
@@ -650,24 +673,93 @@ async function placeOrder() {
   const result = await apiPost('createOrder', body);
   if (result.error) { showToast('Error: ' + result.error); return; }
 
+  state.currentOrder = result;
+  state.cart = [];
+  updateCartBadge();
+
+  if (state.paymentMethod === 'Cash on Delivery') {
+    renderConfirm(result);
+    goTo('confirm');
+  } else {
+    await showPaymentInstructions(result);
+    goTo('payinstructions');
+  }
+}
+
+/* ====================== PAYMENT INSTRUCTIONS ====================== */
+async function showPaymentInstructions(order) {
+  if (!state.paymentSettings) {
+    state.paymentSettings = await apiGet('getPaymentSettings', {});
+  }
+  const s = state.paymentSettings || {};
+  const el = document.getElementById('payinstructions-content');
+
+  let methodBlock = '';
+  if (state.paymentMethod === 'Bank Transfer') {
+    if (s.bankName || s.bankAccountNumber) {
+      methodBlock = `
+        <div class="pay-card">
+          <div class="row"><span>Bank</span><span>${s.bankName || '—'}</span></div>
+          <div class="row"><span>Account Name</span><span>${s.bankAccountName || '—'}</span></div>
+          <div class="row"><span>Account Number</span><span>${s.bankAccountNumber || '—'}</span></div>
+        </div>`;
+    } else {
+      methodBlock = `<div class="pay-missing">Bank details haven't been set up yet. Please contact K-TRONiCS on Telegram to arrange payment for this order.</div>`;
+    }
+  } else if (state.paymentMethod === 'KHQR') {
+    if (s.khqrImageUrl) {
+      methodBlock = `<div class="qr-box"><img src="${s.khqrImageUrl}" alt="KHQR code"></div>`;
+    } else {
+      methodBlock = `<div class="pay-missing">KHQR code hasn't been set up yet. Please contact K-TRONiCS on Telegram to arrange payment for this order.</div>`;
+    }
+  }
+
+  el.innerHTML = `
+    <div class="pay-amount">$${order.total.toFixed(2)}</div>
+    <div class="pay-card">
+      <div class="row"><span>Order No.</span><span>#${order.orderId}</span></div>
+      <div class="row"><span>Payment Method</span><span>${state.paymentMethod}</span></div>
+    </div>
+    ${methodBlock}
+    <p class="pay-note">Transfer the exact amount above, then tap the button below once you've paid. We'll confirm it shortly after.</p>
+    <div class="form-group">
+      <label>Transaction Reference (optional)</label>
+      <input id="f-payref" placeholder="e.g. last 4 digits, receipt no.">
+    </div>
+    <button class="btn-red" onclick="confirmIvePaid()">I've Paid</button>
+    <button class="btn-red" style="background:#fff; color:var(--red); border:1px solid var(--red); margin-top:10px;" onclick="renderConfirm(state.currentOrder); goTo('confirm');">I'll Pay Later</button>
+  `;
+}
+
+async function confirmIvePaid() {
+  const reference = document.getElementById('f-payref').value.trim();
+  const res = await apiPost('submitPaymentReference', { orderId: state.currentOrder.orderId, reference });
+  if (res.error) { showToast('Error: ' + res.error); return; }
+  state.currentOrder.paymentStatus = res.paymentStatus;
+  renderConfirm(state.currentOrder);
+  goTo('confirm');
+}
+
+/* ====================== ORDER CONFIRMATION ====================== */
+function renderConfirm(order) {
+  const statusKey = (order.paymentStatus || 'Pending').replace(/\s+/g, '');
+  const statusLabel = order.paymentStatus || (state.paymentMethod === 'Cash on Delivery' ? 'Pending (pay on delivery)' : 'Awaiting Payment');
   document.getElementById('confirm-content').innerHTML = `
     <div class="confirm-box">
       <div class="check-circle">✓</div>
       <h2>Order Confirmed!</h2>
       <p>Thank you for your purchase.<br>Your order has been placed successfully.</p>
       <div class="receipt">
-        <div class="receipt-row"><span>Order No.</span><span>#${result.orderId}</span></div>
-        <div class="receipt-row"><span>Total Amount</span><span>$${result.total.toFixed(2)}</span></div>
+        <div class="receipt-row"><span>Order No.</span><span>#${order.orderId}</span></div>
+        <div class="receipt-row"><span>Total Amount</span><span>$${order.total.toFixed(2)}</span></div>
         <div class="receipt-row"><span>Payment Method</span><span>${state.paymentMethod}</span></div>
+        <div class="receipt-row"><span>Payment Status</span><span class="payment-status-pill payment-status-${statusKey}">${statusLabel}</span></div>
         <div class="receipt-row"><span>Estimated Delivery</span><span>${state.deliveryFee>0?'1-2 days':'3-5 days'}</span></div>
       </div>
       <button class="btn-red" onclick="goTo('orders')">View Order Details</button>
       <button class="btn-red" style="background:#fff; color:var(--red); border:1px solid var(--red); margin-top:10px;" onclick="backToHomeAfterOrder()">Back to Home</button>
     </div>
   `;
-  state.cart = [];
-  updateCartBadge();
-  goTo('confirm');
 }
 function backToHomeAfterOrder() { goTo('home'); }
 
@@ -693,6 +785,9 @@ function renderOrders(status) {
       <div class="order-head">
         <span class="id">#${o.orderId}</span>
         <span class="status-pill status-${o.status}">${o.status}</span>
+      </div>
+      <div style="margin-bottom:6px;">
+        <span class="payment-status-pill payment-status-${(o.paymentStatus||'Pending').replace(/\s+/g,'')}">${o.paymentStatus || 'Pending'}</span>
       </div>
       <div class="order-thumbs">
         ${o.items.slice(0,4).map(it => {
