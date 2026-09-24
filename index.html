@@ -5,224 +5,249 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>K-TRONiCS</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap">
 <style>
   :root{
-    --red:#e8272c; --black:#141414; --white:#ffffff; --gray-bg:#f5f5f7;
-    --gray-line:#e6e6e9; --gray-text:#8a8a8e; --dark-text:#1c1c1e;
+    --accent:#E2601F; --accent-dark:#B94A15; --header:#17140F; --white:#ffffff;
+    --bg:#FAFAFA; --line:#ECE7DE; --ink-soft:#8A8071; --ink:#1A1712; --badge-bg:#FBE7DA;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
   body{
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-    background:var(--gray-bg); color:var(--dark-text);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    background:var(--bg); color:var(--ink);
     -webkit-font-smoothing:antialiased;
   }
-  #app{max-width:480px; margin:0 auto; min-height:100vh; background:var(--gray-bg); position:relative; padding-bottom:64px;}
+  h1,h2,h3,.brand,.hero h2,.detail-name,.price,.detail-price,.section-title,.splash-mid h1,.splash-logo,.pay-amount{
+    font-family:'Poppins',system-ui,-apple-system,sans-serif;
+  }
+  #app{max-width:480px; margin:0 auto; min-height:100vh; background:var(--bg); position:relative; padding-bottom:64px;}
 
   /* Top bar */
   .topbar{
-    display:flex; align-items:center; justify-content:center; position:relative;
-    background:var(--black); color:var(--white); padding:14px 16px; font-weight:700;
+    display:flex; align-items:center; gap:12px; position:relative;
+    background:var(--header); color:var(--white); padding:16px 16px 14px; font-weight:700;
   }
-  .topbar .back{position:absolute; left:14px; font-size:20px; cursor:pointer; background:none; border:none; color:var(--white);}
-  .topbar .action{position:absolute; right:14px; font-size:18px; cursor:pointer; background:none; border:none; color:var(--white);}
-  .topbar .brand{display:flex; align-items:center; gap:6px; font-size:16px;}
-  .topbar small{display:block; font-weight:400; font-size:11px; color:#bbb; text-align:center;}
+  .topbar .back, .topbar .action{
+    width:32px; height:32px; border-radius:9px; background:#2A251E; border:none; color:var(--white);
+    display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0;
+  }
+  .topbar .brand{display:flex; align-items:center; gap:8px; font-size:16px; font-weight:700; flex-grow:1;}
+  .topbar small{display:block; font-weight:400; font-size:11px; color:#bbb;}
 
   /* Bottom nav */
   .bottomnav{
     position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:480px;
-    display:flex; background:var(--white); border-top:1px solid var(--gray-line); z-index:20;
+    display:flex; background:var(--white); border-top:1px solid var(--line); z-index:20;
+    padding:10px 12px 12px;
   }
   .bottomnav button{
-    flex:1; display:flex; flex-direction:column; align-items:center; gap:2px; padding:8px 0 10px;
-    background:none; border:none; font-size:10px; color:var(--gray-text); position:relative; cursor:pointer;
+    flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; padding:4px 0;
+    background:none; border:none; font-size:10px; font-weight:600; color:var(--ink-soft); position:relative; cursor:pointer;
   }
-  .bottomnav button.active{color:var(--red);}
-  .bottomnav .icon{font-size:20px;}
+  .bottomnav button.active{color:var(--accent);}
+  .bottomnav button.active svg{stroke:var(--accent);}
+  .bottomnav .icon{display:flex; align-items:center; justify-content:center;}
   .badge{
-    position:absolute; top:2px; right:22%; background:var(--red); color:#fff; font-size:9px;
+    position:absolute; top:-3px; right:22%; background:var(--accent); color:#fff; font-size:9px;
     border-radius:8px; padding:1px 5px; font-weight:700;
   }
 
-  .screen{display:none; padding:14px 14px 14px;}
+  .screen{display:none; padding:14px 16px 14px;}
   .screen.active{display:block;}
 
   /* Home */
   .hero{
-    background:linear-gradient(135deg,#1c1c1c,#000); border-radius:14px; padding:20px; color:#fff; margin-bottom:16px;
+    background:var(--header); border-radius:18px; padding:24px 22px; color:#fff; margin-bottom:20px;
+    position:relative; overflow:hidden;
   }
-  .hero h2{font-size:18px; margin-bottom:6px;}
-  .hero p{font-size:12px; color:#ccc; margin-bottom:12px;}
+  .hero h2{font-size:24px; font-weight:800; margin-bottom:6px; line-height:1.15;}
+  .hero p{font-size:13px; color:#C9C2B4; margin-bottom:16px;}
   .btn-red{
-    background:var(--red); color:#fff; border:none; border-radius:24px; padding:12px 20px;
-    font-weight:700; font-size:14px; cursor:pointer; width:100%;
+    background:var(--accent); color:#fff; border:none; border-radius:11px; padding:13px 20px;
+    font-weight:700; font-size:14px; cursor:pointer; width:100%; font-family:'Poppins',system-ui;
+    display:flex; align-items:center; justify-content:center; gap:8px;
   }
   .search-bar{
-    display:flex; align-items:center; gap:8px; background:#fff; border:1px solid var(--gray-line);
-    border-radius:10px; padding:10px 12px; margin-bottom:16px; font-size:14px; color:var(--gray-text);
+    display:flex; align-items:center; gap:10px; background:#fff; border:1px solid var(--line);
+    border-radius:12px; padding:11px 14px; margin-bottom:16px; font-size:14px; color:var(--ink-soft);
   }
-  .cat-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:8px;}
-  .cat-item{display:flex; flex-direction:column; align-items:center; gap:6px; font-size:11px; cursor:pointer;}
+  .cat-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:14px 10px; margin-bottom:8px;}
+  .cat-item{display:flex; flex-direction:column; align-items:center; gap:6px; font-size:11px; font-weight:600; color:#4A4438; cursor:pointer;}
   .cat-icon{
-    width:52px; height:52px; border-radius:14px; background:#fff; border:1px solid var(--gray-line);
-    display:flex; align-items:center; justify-content:center; font-size:22px;
+    width:52px; height:52px; border-radius:14px; background:var(--badge-bg);
+    display:flex; align-items:center; justify-content:center;
   }
 
   /* Product cards */
-  .section-title{font-size:15px; font-weight:700; margin:18px 0 10px;}
+  .section-title{font-size:16px; font-weight:700; margin:22px 0 12px; display:flex; align-items:center; justify-content:space-between;}
   .product-list{display:flex; flex-direction:column; gap:10px;}
+  .product-list.grid{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
   .product-card{
-    display:flex; gap:12px; background:#fff; border:1px solid var(--gray-line); border-radius:12px; padding:10px; cursor:pointer;
+    display:flex; gap:12px; background:#fff; border:1px solid var(--line); border-radius:14px; padding:12px; cursor:pointer;
   }
-  .product-card img, .product-thumb{
-    width:64px; height:64px; border-radius:8px; background:#f0f0f2; object-fit:contain; flex-shrink:0;
+  .product-list.grid .product-card{flex-direction:column;}
+  .product-thumb{
+    width:64px; height:64px; border-radius:10px; background:#F6F3EC; object-fit:contain; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; color:#B8AE9C;
   }
-  .product-info{flex:1; display:flex; flex-direction:column; gap:2px;}
-  .product-info .name{font-size:13px; font-weight:600; line-height:1.3;}
-  .product-info .price{font-size:15px; font-weight:700; color:var(--red);}
-  .product-info .rating{font-size:11px; color:var(--gray-text);}
+  .product-list.grid .product-thumb{width:100%; height:82px;}
+  .product-thumb img{width:100%; height:100%; object-fit:contain;}
+  .product-info{flex:1; display:flex; flex-direction:column; gap:3px; min-width:0;}
+  .product-info .name{font-size:12.5px; font-weight:600; line-height:1.35;}
+  .product-info .price{font-size:15px; font-weight:800; color:var(--accent); font-family:'Poppins',system-ui;}
+  .product-info .rating{font-size:11px; color:var(--ink-soft); display:flex; align-items:center; gap:3px;}
   .add-cart-btn{
-    background:var(--red); color:#fff; border:none; border-radius:16px; padding:6px 14px; font-size:12px; font-weight:700; cursor:pointer; align-self:flex-end;
+    background:var(--accent); color:#fff; border:none; border-radius:8px; width:26px; height:26px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
   }
+  .product-list.grid .add-cart-btn{align-self:flex-end;}
+  .product-list:not(.grid) .product-card{align-items:center;}
 
   /* Category chips */
-  .chip-row{display:flex; gap:8px; overflow-x:auto; margin-bottom:14px; padding-bottom:2px;}
+  .chip-row{display:flex; gap:8px; overflow-x:auto; margin-bottom:16px; padding-bottom:2px;}
   .chip{
-    flex-shrink:0; padding:7px 16px; border-radius:20px; border:1px solid var(--gray-line); background:#fff;
+    flex-shrink:0; padding:8px 16px; border-radius:20px; border:none; background:#F1EEE7; color:#4A4438;
     font-size:12px; font-weight:600; cursor:pointer; white-space:nowrap;
   }
-  .chip.active{background:var(--red); color:#fff; border-color:var(--red);}
+  .chip.active{background:var(--accent); color:#fff;}
 
   /* Product detail */
   .detail-image{
-    width:100%; height:220px; background:#fff; border-radius:14px; display:flex; align-items:center; justify-content:center;
-    font-size:64px; margin-bottom:14px; border:1px solid var(--gray-line);
+    width:100%; height:220px; background:#F6F3EC; border-radius:16px; display:flex; align-items:center; justify-content:center;
+    margin:-14px -16px 18px; width:calc(100% + 32px); color:#C9BFA9;
   }
-  .detail-name{font-size:18px; font-weight:700; margin-bottom:4px;}
-  .detail-rating{font-size:12px; color:var(--gray-text); margin-bottom:8px;}
-  .detail-price{font-size:22px; font-weight:800; color:var(--red); margin-bottom:14px;}
-  .spec-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:16px;}
-  .spec-item{background:#fff; border:1px solid var(--gray-line); border-radius:10px; padding:8px 4px; text-align:center; font-size:10px;}
-  .spec-item .val{font-size:13px; font-weight:700; display:block;}
-  .swatch-row{display:flex; gap:10px; margin-bottom:20px;}
+  .detail-name{font-size:19px; font-weight:700; margin-bottom:6px; line-height:1.3;}
+  .detail-rating{font-size:12px; color:var(--ink-soft); margin-bottom:10px; display:flex; align-items:center; gap:4px;}
+  .detail-price{font-size:24px; font-weight:800; color:var(--accent); margin-bottom:18px;}
+  .spec-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:18px;}
+  .spec-item{background:#fff; border:1px solid var(--line); border-radius:10px; padding:10px 4px; text-align:center; font-size:10px; color:var(--accent);}
+  .spec-item .val{font-size:11px; font-weight:700; display:block; color:var(--ink); margin-top:4px;}
+  .swatch-row{display:flex; gap:10px; margin-bottom:22px;}
   .swatch{
-    width:36px; height:36px; border-radius:50%; border:2px solid var(--gray-line); cursor:pointer;
+    padding:9px 18px; border-radius:10px; font-size:12.5px; font-weight:600; border:1.5px solid var(--line);
+    background:#fff; color:var(--ink); cursor:pointer;
   }
-  .swatch.selected{border-color:var(--red); box-shadow:0 0 0 2px #fff inset;}
+  .swatch.selected{border-color:var(--accent); background:var(--accent); color:#fff;}
 
   /* Cart */
-  .cart-item{display:flex; gap:10px; background:#fff; border:1px solid var(--gray-line); border-radius:12px; padding:10px; margin-bottom:10px; align-items:center;}
-  .cart-item-info{flex:1;}
-  .cart-item-info .name{font-size:13px; font-weight:600;}
-  .cart-item-info .variant{font-size:11px; color:var(--gray-text);}
-  .cart-item-info .price{font-size:13px; font-weight:700; margin-top:4px;}
-  .qty-control{display:flex; align-items:center; gap:8px;}
+  .cart-item{display:flex; gap:12px; background:#fff; border:1px solid var(--line); border-radius:14px; padding:12px; margin-bottom:12px; align-items:center;}
+  .cart-item-info{flex:1; min-width:0;}
+  .cart-item-info .name{font-size:12.5px; font-weight:600; line-height:1.3;}
+  .cart-item-info .variant{font-size:11px; color:var(--ink-soft); margin-top:2px;}
+  .cart-item-info .price{font-size:14px; font-weight:800; color:var(--accent); margin-top:6px; font-family:'Poppins',system-ui;}
+  .qty-control{display:flex; align-items:center; gap:2px; border:1px solid var(--line); border-radius:8px;}
   .qty-control button{
-    width:24px; height:24px; border-radius:50%; border:1px solid var(--gray-line); background:#fff; cursor:pointer; font-size:14px;
+    width:26px; height:26px; border-radius:8px; border:none; background:#fff; cursor:pointer; font-size:14px;
+    display:flex; align-items:center; justify-content:center; color:var(--ink);
   }
-  .cart-summary{background:#fff; border:1px solid var(--gray-line); border-radius:12px; padding:14px; margin-top:14px;}
-  .summary-row{display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px; color:var(--gray-text);}
-  .summary-row.total{font-size:16px; font-weight:800; color:var(--dark-text); border-top:1px solid var(--gray-line); padding-top:10px;}
+  .qty-control span{width:20px; text-align:center; font-size:12px; font-weight:700;}
+  .cart-summary{background:#fff; border:1px solid var(--line); border-radius:14px; padding:16px; margin-top:6px;}
+  .summary-row{display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:10px; color:#5B5546;}
+  .summary-row.total{font-size:16px; font-weight:800; color:var(--ink); border-top:1px solid var(--line); padding-top:12px; margin-top:2px; margin-bottom:0; font-family:'Poppins',system-ui;}
+  .summary-row.total span:last-child{color:var(--accent);}
 
   /* Steps */
-  .step-row{display:flex; align-items:center; justify-content:center; gap:6px; margin-bottom:20px;}
-  .step{display:flex; flex-direction:column; align-items:center; gap:4px; font-size:11px; color:var(--gray-text);}
-  .step .dot{width:24px; height:24px; border-radius:50%; background:#eee; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;}
-  .step.active .dot{background:var(--red); color:#fff;}
-  .step-line{width:36px; height:2px; background:var(--gray-line); margin-bottom:16px;}
+  .step-row{display:flex; align-items:center; justify-content:center; gap:6px; margin-bottom:22px;}
+  .step{display:flex; flex-direction:column; align-items:center; gap:5px; font-size:11px; font-weight:600; color:var(--ink-soft);}
+  .step .dot{width:26px; height:26px; border-radius:50%; background:#F1EEE7; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;}
+  .step.active{color:var(--ink);}
+  .step.active .dot{background:var(--accent); color:#fff;}
+  .step-line{width:32px; height:2px; background:var(--line); margin-bottom:19px;}
 
   .form-group{margin-bottom:14px;}
-  .form-group label{display:block; font-size:12px; font-weight:600; margin-bottom:6px; color:var(--gray-text);}
+  .form-group label{display:block; font-size:12px; font-weight:700; margin-bottom:7px; color:#4A4438;}
   .form-group input, .form-group textarea{
-    width:100%; padding:11px 12px; border:1px solid var(--gray-line); border-radius:10px; font-size:14px; background:#fff;
+    width:100%; padding:11px 13px; border:1px solid var(--line); border-radius:11px; font-size:14px; background:#fff;
+    font-family:inherit; color:var(--ink);
   }
   .radio-card{
-    display:flex; align-items:center; gap:10px; background:#fff; border:1px solid var(--gray-line); border-radius:10px;
-    padding:12px; margin-bottom:10px; cursor:pointer; font-size:13px; font-weight:600;
+    display:flex; align-items:center; gap:12px; background:#fff; border:1.5px solid var(--line); border-radius:14px;
+    padding:13px 14px; margin-bottom:10px; cursor:pointer; font-size:13px; font-weight:600;
   }
-  .radio-card.selected{border-color:var(--red); background:#fff5f5;}
-  .radio-dot{width:18px; height:18px; border-radius:50%; border:2px solid var(--gray-line); flex-shrink:0;}
-  .radio-card.selected .radio-dot{border-color:var(--red); background:radial-gradient(var(--red) 45%, transparent 50%);}
-  .price-tag{margin-left:auto; font-size:12px; color:var(--gray-text); font-weight:400;}
+  .radio-card.selected{border-color:var(--accent);}
+  .radio-dot{width:19px; height:19px; border-radius:50%; border:2px solid #D9D2C4; flex-shrink:0;}
+  .radio-card.selected .radio-dot{border-color:var(--accent); background:radial-gradient(var(--accent) 50%, transparent 52%);}
+  .price-tag{margin-left:auto; font-size:12px; color:var(--ink-soft); font-weight:400;}
 
   /* Confirmation */
-  .confirm-box{text-align:center; padding:40px 10px;}
+  .confirm-box{text-align:center; padding:40px 6px;}
   .check-circle{
-    width:72px; height:72px; border-radius:50%; background:#e8f9ec; color:#22c55e; font-size:36px;
-    display:flex; align-items:center; justify-content:center; margin:0 auto 16px;
+    width:72px; height:72px; border-radius:50%; background:#E6F6EB; color:#1F8A4C;
+    display:flex; align-items:center; justify-content:center; margin:0 auto 18px;
   }
-  .confirm-box h2{font-size:19px; margin-bottom:6px;}
-  .confirm-box p{font-size:13px; color:var(--gray-text); margin-bottom:20px;}
-  .receipt{background:#fff; border:1px solid var(--gray-line); border-radius:12px; padding:16px; text-align:left; margin-bottom:20px;}
-  .receipt-row{display:flex; justify-content:space-between; font-size:13px; padding:6px 0; color:var(--gray-text);}
-  .receipt-row span:last-child{color:var(--dark-text); font-weight:600;}
+  .confirm-box h2{font-size:19px; font-weight:700; margin-bottom:8px;}
+  .confirm-box p{font-size:13px; color:var(--ink-soft); margin-bottom:22px; line-height:1.5;}
+  .receipt{background:#fff; border:1px solid var(--line); border-radius:14px; padding:16px; text-align:left; margin-bottom:22px;}
+  .receipt-row{display:flex; justify-content:space-between; font-size:12.5px; padding:7px 0; color:var(--ink-soft);}
+  .receipt-row span:last-child{color:var(--ink); font-weight:600;}
 
   /* Orders */
-  .order-card{background:#fff; border:1px solid var(--gray-line); border-radius:12px; padding:12px; margin-bottom:10px;}
-  .order-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;}
-  .order-head .id{font-weight:700; font-size:13px;}
-  .status-pill{font-size:10px; font-weight:700; padding:3px 10px; border-radius:12px;}
-  .status-Processing{background:#fff4e5; color:#e08a00;}
-  .status-Shipped{background:#e6f0ff; color:#2563eb;}
-  .status-Delivered{background:#e8f9ec; color:#22c55e;}
-  .order-thumbs{display:flex; gap:8px; margin-bottom:8px;}
-  .order-thumbs .product-thumb{width:44px; height:44px;}
-  .order-meta{font-size:11px; color:var(--gray-text); display:flex; justify-content:space-between;}
+  .order-card{background:#fff; border:1px solid var(--line); border-radius:14px; padding:14px; margin-bottom:12px;}
+  .order-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;}
+  .order-head .id{font-weight:700; font-size:13px; font-family:'Poppins',system-ui;}
+  .status-pill{font-size:10px; font-weight:700; padding:4px 11px; border-radius:12px;}
+  .status-Processing{background:#FEF2E3; color:#B4680A;}
+  .status-Shipped{background:#E7EEFD; color:#2A5AD1;}
+  .status-Delivered{background:#E6F6EB; color:#1F8A4C;}
+  .order-thumbs{display:flex; gap:8px; margin-bottom:10px;}
+  .order-thumbs .product-thumb{width:44px; height:44px; border-radius:8px;}
+  .order-meta{font-size:11px; color:var(--ink-soft); display:flex; justify-content:space-between;}
 
   /* Profile */
-  .profile-head{display:flex; align-items:center; gap:12px; padding:10px 0 20px;}
-  .avatar{width:56px; height:56px; border-radius:50%; background:var(--red); color:#fff; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:700;}
+  .profile-head{display:flex; align-items:center; gap:14px; padding:6px 0 22px;}
+  .avatar{width:56px; height:56px; border-radius:50%; background:var(--accent); color:#fff; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:700; font-family:'Poppins',system-ui;}
   .profile-head .pname{font-size:16px; font-weight:700;}
-  .profile-head .pphone{font-size:12px; color:var(--gray-text);}
-  .menu-list{background:#fff; border:1px solid var(--gray-line); border-radius:12px; overflow:hidden;}
-  .menu-item{display:flex; justify-content:space-between; align-items:center; padding:14px 16px; font-size:13px; font-weight:600; border-bottom:1px solid var(--gray-line); cursor:pointer;}
+  .profile-head .pphone{font-size:12px; color:var(--ink-soft); margin-top:2px;}
+  .menu-list{background:#fff; border:1px solid var(--line); border-radius:14px; overflow:hidden;}
+  .menu-item{display:flex; justify-content:space-between; align-items:center; padding:15px 16px; font-size:13px; font-weight:600; border-bottom:1px solid var(--line); cursor:pointer;}
   .menu-item:last-child{border-bottom:none;}
-  .menu-item .arrow{color:var(--gray-text); font-weight:400;}
+  .menu-item .arrow{color:var(--ink-soft); font-weight:400;}
 
   /* Splash */
   #screen-splash{padding:0;}
   .splash-hero{
-    background:linear-gradient(150deg,#1c1c1c,#000 60%); min-height:100vh; padding:40px 24px 24px;
+    background:var(--header); min-height:100vh; padding:44px 26px 26px;
     display:flex; flex-direction:column; color:#fff; position:relative; overflow:hidden;
   }
   .splash-hero::after{
     content:''; position:absolute; inset:0; background:
-      radial-gradient(circle at 80% 15%, rgba(232,39,44,.35), transparent 45%);
+      radial-gradient(circle at 80% 15%, rgba(226,96,31,.28), transparent 45%);
     pointer-events:none;
   }
-  .splash-logo{font-size:20px; font-weight:800; letter-spacing:.5px; display:flex; align-items:center; gap:6px; margin-bottom:auto;}
-  .splash-mid{margin:32px 0; position:relative;}
-  .splash-mid h1{font-size:26px; font-weight:800; margin-bottom:8px;}
-  .splash-mid p{font-size:13px; color:#ccc; margin-bottom:24px;}
+  .splash-logo{font-size:20px; font-weight:800; letter-spacing:.4px; display:flex; align-items:center; gap:8px; margin-bottom:auto;}
+  .splash-mid{margin:36px 0; position:relative;}
+  .splash-mid h1{font-size:27px; font-weight:800; margin-bottom:10px; line-height:1.2;}
+  .splash-mid p{font-size:13px; color:#C9C2B4; margin-bottom:26px;}
   .splash-open-btn{
-    background:var(--red); color:#fff; border:none; border-radius:26px; padding:15px 20px;
+    background:var(--accent); color:#fff; border:none; border-radius:14px; padding:15px 20px;
     font-weight:700; font-size:14px; width:100%; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;
+    font-family:'Poppins',system-ui;
   }
-  .splash-features{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:28px; position:relative;}
-  .splash-feature{text-align:center; font-size:10px; color:#ccc; display:flex; flex-direction:column; align-items:center; gap:6px;}
-  .splash-feature .fi{font-size:18px;}
+  .splash-features{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:30px; position:relative;}
+  .splash-feature{text-align:center; font-size:10px; color:#C9C2B4; font-weight:600; display:flex; flex-direction:column; align-items:center; gap:8px;}
+  .splash-feature .fi{width:34px; height:34px; border-radius:10px; background:rgba(255,255,255,.08); display:flex; align-items:center; justify-content:center;}
 
   /* Payment instructions */
-  .pay-card{background:#fff; border:1px solid var(--gray-line); border-radius:12px; padding:16px; margin-bottom:14px;}
-  .pay-card .row{display:flex; justify-content:space-between; font-size:13px; padding:6px 0; color:var(--gray-text);}
-  .pay-card .row span:last-child{color:var(--dark-text); font-weight:700;}
-  .pay-amount{font-size:26px; font-weight:800; color:var(--red); text-align:center; margin:10px 0;}
-  .qr-box{width:100%; max-width:220px; margin:0 auto 14px; border:1px solid var(--gray-line); border-radius:12px; padding:10px; background:#fff;}
-  .qr-box img{width:100%; display:block; border-radius:6px;}
-  .pay-note{font-size:12px; color:var(--gray-text); text-align:center; margin-bottom:16px; line-height:1.5;}
-  .pay-missing{background:#fff4e5; color:#8a5300; border-radius:10px; padding:12px; font-size:12px; margin-bottom:14px; text-align:center;}
-  .payment-status-pill{font-size:10px; font-weight:700; padding:3px 10px; border-radius:12px;}
-  .payment-status-Pending{background:#fff4e5; color:#e08a00;}
-  .payment-status-AwaitingPayment{background:#fdeaea; color:#e8272c;}
-  .payment-status-AwaitingVerification{background:#e6f0ff; color:#2563eb;}
-  .payment-status-Paid{background:#e8f9ec; color:#22c55e;}
-  .payment-status-Failed{background:#fdeaea; color:#e8272c;}
+  .pay-card{background:#fff; border:1px solid var(--line); border-radius:14px; padding:16px; margin-bottom:14px;}
+  .pay-card .row{display:flex; justify-content:space-between; font-size:12.5px; padding:7px 0; color:var(--ink-soft);}
+  .pay-card .row span:last-child{color:var(--ink); font-weight:700;}
+  .pay-amount{font-size:28px; font-weight:800; color:var(--accent); text-align:center; margin:12px 0; font-family:'Poppins',system-ui;}
+  .qr-box{width:100%; max-width:220px; margin:0 auto 16px; border:1px solid var(--line); border-radius:14px; padding:10px; background:#fff;}
+  .qr-box img{width:100%; display:block; border-radius:8px;}
+  .pay-note{font-size:12px; color:var(--ink-soft); text-align:center; margin-bottom:18px; line-height:1.6;}
+  .pay-missing{background:#FEF2E3; color:#8A5300; border-radius:12px; padding:13px; font-size:12px; margin-bottom:16px; text-align:center; line-height:1.5;}
+  .payment-status-pill{font-size:10px; font-weight:700; padding:4px 11px; border-radius:12px;}
+  .payment-status-Pending{background:#FEF2E3; color:#B4680A;}
+  .payment-status-AwaitingPayment{background:#FBE7DA; color:#B94A15;}
+  .payment-status-AwaitingVerification{background:#E7EEFD; color:#2A5AD1;}
+  .payment-status-Paid{background:#E6F6EB; color:#1F8A4C;}
+  .payment-status-Failed{background:#FBE7DA; color:#B94A15;}
 
-  .empty-state{text-align:center; padding:60px 20px; color:var(--gray-text); font-size:13px;}
+  .empty-state{text-align:center; padding:60px 20px; color:var(--ink-soft); font-size:13px;}
   .toast{
-    position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:#141414; color:#fff;
-    padding:10px 18px; border-radius:20px; font-size:13px; z-index:50; opacity:0; transition:opacity .25s;
-    pointer-events:none;
+    position:fixed; bottom:82px; left:50%; transform:translateX(-50%); background:var(--header); color:#fff;
+    padding:11px 20px; border-radius:24px; font-size:13px; z-index:50; opacity:0; transition:opacity .25s;
+    pointer-events:none; white-space:nowrap;
   }
   .toast.show{opacity:1;}
 </style>
@@ -233,26 +258,21 @@
   <!-- ===== SPLASH ===== -->
   <section class="screen active" id="screen-splash">
     <div class="splash-hero">
-      <div class="splash-logo">⚡ K-TRONiCS</div>
+      <div class="splash-logo" id="logo-bolt-1">K-TRONiCS</div>
       <div class="splash-mid">
         <h1>Premium Mobile Accessories</h1>
         <p>Better Connection. Better Life.</p>
-        <button class="splash-open-btn" onclick="openApp()">📨 Open Mini App</button>
+        <button class="splash-open-btn" onclick="openApp()">Open Mini App</button>
       </div>
-      <div class="splash-features">
-        <div class="splash-feature"><span class="fi">⚡</span>Fast</div>
-        <div class="splash-feature"><span class="fi">✅</span>Reliable</div>
-        <div class="splash-feature"><span class="fi">⭐</span>Quality</div>
-        <div class="splash-feature"><span class="fi">🎧</span>Support</div>
-      </div>
+      <div class="splash-features" id="splash-features"></div>
     </div>
   </section>
 
   <!-- ===== HOME ===== -->
   <section class="screen" id="screen-home">
-    <div class="topbar"><div class="brand">⚡ K-TRONiCS</div></div>
-    <div class="screen" style="display:block; padding-top:14px;">
-      <div class="search-bar" onclick="goTo('listing', {category:'All'})">🔍 Search products...</div>
+    <div class="topbar"><div class="brand" id="logo-bolt-2">K-TRONiCS</div></div>
+    <div class="screen" style="display:block; padding-top:16px;">
+      <div class="search-bar" onclick="goTo('listing', {category:'All'})" id="search-bar-icon">Search products&hellip;</div>
       <div class="hero">
         <h2>Power Your Life</h2>
         <p>Reliable Accessories for Every Device</p>
@@ -260,45 +280,45 @@
       </div>
       <div class="cat-grid" id="home-categories"></div>
       <div class="section-title">Popular Products</div>
-      <div class="product-list" id="home-popular"></div>
+      <div class="product-list grid" id="home-popular"></div>
     </div>
   </section>
 
   <!-- ===== PRODUCT LISTING ===== -->
   <section class="screen" id="screen-listing">
     <div class="topbar">
-      <button class="back" onclick="goTo('home')">←</button>
+      <button class="back" onclick="goTo('home')" id="back-btn-listing"></button>
       <div class="brand" id="listing-title">Products</div>
     </div>
-    <div style="padding-top:14px;">
+    <div style="padding-top:16px;">
       <div class="chip-row" id="listing-chips"></div>
-      <div class="product-list" id="listing-products"></div>
+      <div class="product-list grid" id="listing-products"></div>
     </div>
   </section>
 
   <!-- ===== PRODUCT DETAIL ===== -->
   <section class="screen" id="screen-detail">
     <div class="topbar">
-      <button class="back" onclick="goBack()">←</button>
+      <button class="back" onclick="goBack()" id="back-btn-detail"></button>
       <div class="brand">K-TRONiCS</div>
-      <button class="action" onclick="showToast('Link copied')">⇧</button>
+      <button class="action" onclick="showToast('Link copied')" id="share-btn-detail"></button>
     </div>
-    <div style="padding-top:14px;" id="detail-content"></div>
+    <div style="padding-top:16px;" id="detail-content"></div>
   </section>
 
   <!-- ===== CART ===== -->
   <section class="screen" id="screen-cart">
     <div class="topbar">
-      <button class="back" onclick="goTo('home')">←</button>
+      <button class="back" onclick="goTo('home')" id="back-btn-cart"></button>
       <div class="brand">Your Cart</div>
     </div>
-    <div style="padding-top:14px;" id="cart-content"></div>
+    <div style="padding-top:16px;" id="cart-content"></div>
   </section>
 
   <!-- ===== CHECKOUT: SHIPPING ===== -->
   <section class="screen" id="screen-shipping">
-    <div class="topbar"><button class="back" onclick="goTo('cart')">←</button><div class="brand">Checkout</div></div>
-    <div style="padding-top:14px;">
+    <div class="topbar"><button class="back" onclick="goTo('cart')" id="back-btn-shipping"></button><div class="brand">Checkout</div></div>
+    <div style="padding-top:16px;">
       <div class="step-row">
         <div class="step active"><div class="dot">1</div>Address</div>
         <div class="step-line"></div>
@@ -323,8 +343,8 @@
 
   <!-- ===== CHECKOUT: PAYMENT ===== -->
   <section class="screen" id="screen-payment">
-    <div class="topbar"><button class="back" onclick="goTo('shipping')">←</button><div class="brand">Checkout</div></div>
-    <div style="padding-top:14px;">
+    <div class="topbar"><button class="back" onclick="goTo('shipping')" id="back-btn-payment"></button><div class="brand">Checkout</div></div>
+    <div style="padding-top:16px;">
       <div class="step-row">
         <div class="step"><div class="dot">1</div>Address</div>
         <div class="step-line"></div>
@@ -340,7 +360,7 @@
         <label>Promo Code</label>
         <div style="display:flex; gap:8px;">
           <input id="f-promo" placeholder="Enter code" style="flex:1;">
-          <button style="border:1px solid var(--gray-line); background:#fff; border-radius:10px; padding:0 16px; font-weight:700; color:var(--red);" onclick="showToast('Code applied')">Apply</button>
+          <button style="border:1px solid var(--line); background:#fff; border-radius:11px; padding:0 16px; font-weight:700; color:var(--accent); font-family:inherit; cursor:pointer;" onclick="showToast('Code applied')">Apply</button>
         </div>
       </div>
       <button class="btn-red" onclick="placeOrder()">Continue</button>
@@ -350,19 +370,19 @@
   <!-- ===== PAYMENT INSTRUCTIONS (Bank Transfer / KHQR) ===== -->
   <section class="screen" id="screen-payinstructions">
     <div class="topbar"><div class="brand">Complete Payment</div></div>
-    <div style="padding-top:14px;" id="payinstructions-content"></div>
+    <div style="padding-top:16px;" id="payinstructions-content"></div>
   </section>
 
   <!-- ===== ORDER CONFIRMATION ===== -->
   <section class="screen" id="screen-confirm">
     <div class="topbar"><div class="brand">K-TRONiCS</div></div>
-    <div style="padding-top:14px;" id="confirm-content"></div>
+    <div style="padding-top:16px;" id="confirm-content"></div>
   </section>
 
   <!-- ===== MY ORDERS ===== -->
   <section class="screen" id="screen-orders">
     <div class="topbar"><div class="brand">My Orders</div></div>
-    <div style="padding-top:14px;">
+    <div style="padding-top:16px;">
       <div class="chip-row">
         <div class="chip active" onclick="filterOrders(this,'All')">All</div>
         <div class="chip" onclick="filterOrders(this,'Processing')">Processing</div>
@@ -376,39 +396,63 @@
   <!-- ===== PROFILE ===== -->
   <section class="screen" id="screen-profile">
     <div class="topbar"><div class="brand">K-TRONiCS</div></div>
-    <div style="padding-top:14px;">
+    <div style="padding-top:16px;">
       <div class="profile-head">
         <div class="avatar" id="profile-initial">L</div>
         <div><div class="pname" id="profile-name">Guest</div><div class="pphone" id="profile-phone">Not signed in</div></div>
       </div>
       <div class="menu-list">
-        <div class="menu-item" onclick="goTo('orders')">My Orders <span class="arrow">›</span></div>
-        <div class="menu-item">My Addresses <span class="arrow">›</span></div>
-        <div class="menu-item">Payment Methods <span class="arrow">›</span></div>
-        <div class="menu-item">Notifications <span class="arrow">›</span></div>
-        <div class="menu-item">Help &amp; Support <span class="arrow">›</span></div>
-        <div class="menu-item">About K-TRONiCS <span class="arrow">›</span></div>
+        <div class="menu-item" onclick="goTo('orders')">My Orders <span class="arrow">&rsaquo;</span></div>
+        <div class="menu-item">My Addresses <span class="arrow">&rsaquo;</span></div>
+        <div class="menu-item">Payment Methods <span class="arrow">&rsaquo;</span></div>
+        <div class="menu-item">Notifications <span class="arrow">&rsaquo;</span></div>
+        <div class="menu-item">Help &amp; Support <span class="arrow">&rsaquo;</span></div>
+        <div class="menu-item">About K-TRONiCS <span class="arrow">&rsaquo;</span></div>
       </div>
     </div>
   </section>
 
   <div class="bottomnav" id="bottomnav" style="display:none;">
-    <button data-tab="home" onclick="goTo('home')"><span class="icon">🏠</span>Home</button>
-    <button data-tab="listing" onclick="goTo('listing',{category:'All'})"><span class="icon">🗂️</span>Categories</button>
-    <button data-tab="cart" onclick="goTo('cart')"><span class="icon">🛒</span>Cart<span class="badge" id="cart-badge" style="display:none;">0</span></button>
-    <button data-tab="profile" onclick="goTo('profile')"><span class="icon">👤</span>Profile</button>
+    <button data-tab="home" onclick="goTo('home')"><span class="icon" id="nav-icon-home"></span>Home</button>
+    <button data-tab="listing" onclick="goTo('listing',{category:'All'})"><span class="icon" id="nav-icon-listing"></span>Categories</button>
+    <button data-tab="cart" onclick="goTo('cart')"><span class="icon" id="nav-icon-cart"></span>Cart<span class="badge" id="cart-badge" style="display:none;">0</span></button>
+    <button data-tab="profile" onclick="goTo('profile')"><span class="icon" id="nav-icon-profile"></span>Profile</button>
   </div>
   <div class="toast" id="toast"></div>
 </div>
 
 <script>
+/* ====================== ICONS (inline SVG, no emoji) ====================== */
+const ICON = {
+  bolt: '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg>',
+  search: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>',
+  back: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>',
+  share: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5 15.4 17M15.4 7 8.6 10.5"/></svg>',
+  plus: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  minus: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M5 12h14"/></svg>',
+  check: '<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
+  star: '<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 3.1 6.6 7.2.9-5.3 5 1.4 7.1L12 18.2 5.6 21.6 7 14.5l-5.3-5 7.2-.9z"/></svg>',
+  box: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 8 12 3 3 8l9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8M12 13v8"/></svg>',
+  home: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>',
+  orders: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 7v13a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V7l-3-5z"/><path d="M3 7h18M9 11a3 3 0 0 0 6 0"/></svg>',
+  cart: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>',
+  profile: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>',
+  powerbank: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="7" width="10" height="14" rx="2"/><path d="M9 7V5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2"/><rect x="16" y="10" width="2" height="6" rx="1" fill="currentColor" stroke="none"/></svg>',
+  charger: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="9" width="8" height="6" rx="1"/><path d="M12 12h4m0-3v6M20 9v6"/></svg>',
+  cable: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 13a5 5 0 0 1 7 0l1 1a5 5 0 0 1 0 7 5 5 0 0 1-7 0l-1-1"/><path d="M14 11a5 5 0 0 0-7 0l-1 1a5 5 0 0 0 0 7 5 5 0 0 0 7 0l1-1"/></svg>',
+  earphones: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 14a9 9 0 0 1 18 0"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>',
+  speaker: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="8" y="3" width="8" height="18" rx="3"/><circle cx="12" cy="16" r="2.4"/><circle cx="12" cy="7.5" r=".6" fill="currentColor" stroke="none"/></svg>',
+  protector: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 4 6v6c0 5 3.4 8.4 8 9 4.6-.6 8-4 8-9V6z"/></svg>',
+  lcd: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg>',
+  lightning: '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg>',
+  shield: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 4 6v6c0 5 3.4 8.4 8 9 4.6-.6 8-4 8-9V6z"/></svg>',
+  headset: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 14a9 9 0 0 1 18 0"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>',
+  send: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4z"/><path d="M22 2 11 13"/></svg>'
+};
+const CAT_ICONS = { 'Power Bank':'powerbank','Charger':'charger','Cable':'cable','Earphones':'earphones','Speakers':'speaker','Protector':'protector','LCD':'lcd' };
+
 /* ====================== CONFIG ====================== */
 const API_URL = 'PASTE_YOUR_APPS_SCRIPT_EXEC_URL_HERE';
-
-const CATEGORY_ICONS = {
-  'Power Bank':'🔋','Charger':'🔌','Cable':'🔗','Earphones':'🎧',
-  'Speakers':'🔊','Protector':'🛡️','LCD':'📱'
-};
 
 /* ====================== STATE ====================== */
 let state = {
@@ -425,6 +469,24 @@ let state = {
   paymentSettings: null,
   currentOrder: null
 };
+
+/* ====================== STATIC ICON SLOTS ====================== */
+document.getElementById('logo-bolt-1').innerHTML = ICON.bolt + ' K-TRONiCS';
+document.getElementById('logo-bolt-2').innerHTML = ICON.bolt + ' K-TRONiCS';
+document.getElementById('search-bar-icon').innerHTML = ICON.search + ' <span>Search products&hellip;</span>';
+document.getElementById('back-btn-listing').innerHTML = ICON.back;
+document.getElementById('back-btn-detail').innerHTML = ICON.back;
+document.getElementById('share-btn-detail').innerHTML = ICON.share;
+document.getElementById('back-btn-cart').innerHTML = ICON.back;
+document.getElementById('back-btn-shipping').innerHTML = ICON.back;
+document.getElementById('back-btn-payment').innerHTML = ICON.back;
+document.getElementById('nav-icon-home').innerHTML = ICON.home;
+document.getElementById('nav-icon-listing').innerHTML = ICON.orders;
+document.getElementById('nav-icon-cart').innerHTML = ICON.cart;
+document.getElementById('nav-icon-profile').innerHTML = ICON.profile;
+document.getElementById('splash-features').innerHTML = [
+  ['lightning','Fast'], ['check','Reliable'], ['star','Quality'], ['headset','Support']
+].map(([i,l]) => `<div class="splash-feature"><span class="fi">${ICON[i]}</span>${l}</div>`).join('');
 
 /* ====================== TELEGRAM INIT ====================== */
 (function initTelegram(){
@@ -488,10 +550,10 @@ function showToast(msg) {
 
 /* ====================== LOAD & RENDER: HOME ====================== */
 async function loadHome() {
-  const cats = Object.keys(CATEGORY_ICONS);
+  const cats = Object.keys(CAT_ICONS);
   document.getElementById('home-categories').innerHTML = cats.map(c => `
     <div class="cat-item" onclick="goTo('listing',{category:'${c}'})">
-      <div class="cat-icon">${CATEGORY_ICONS[c]}</div>${c}
+      <div class="cat-icon">${ICON[CAT_ICONS[c]]}</div>${c}
     </div>`).join('');
 
   const products = await apiGet('getProducts', {});
@@ -503,13 +565,13 @@ async function loadHome() {
 function productCardHTML(p) {
   return `
   <div class="product-card" onclick="openProduct('${p.id}')">
-    <div class="product-thumb" style="display:flex;align-items:center;justify-content:center;font-size:26px;">${p.image ? `<img src="${p.image}" style="width:100%;height:100%;object-fit:contain;">` : '📦'}</div>
+    <div class="product-thumb">${p.image ? `<img src="${p.image}">` : ICON.box}</div>
     <div class="product-info">
       <div class="name">${p.name}</div>
-      <div class="rating">⭐ ${p.rating || '-'} (${p.reviewCount || 0})</div>
+      <div class="rating">${ICON.star} ${p.rating || '-'} (${p.reviewCount || 0})</div>
       <div class="price">$${Number(p.price).toFixed(2)}</div>
     </div>
-    <button class="add-cart-btn" onclick="event.stopPropagation(); quickAdd('${p.id}')">Add to Cart</button>
+    <button class="add-cart-btn" onclick="event.stopPropagation(); quickAdd('${p.id}')" aria-label="Add to cart">${ICON.plus}</button>
   </div>`;
 }
 function emptyMsg(msg){ return `<div class="empty-state">${msg}</div>`; }
@@ -521,7 +583,7 @@ async function renderListing(category) {
     const products = await apiGet('getProducts', {});
     state.products = products.error ? [] : products;
   }
-  const cats = ['All', ...Object.keys(CATEGORY_ICONS)];
+  const cats = ['All', ...Object.keys(CAT_ICONS)];
   document.getElementById('listing-chips').innerHTML = cats.map(c =>
     `<div class="chip ${c===category?'active':''}" onclick="filterListing(this,'${c}')">${c}</div>`
   ).join('');
@@ -546,28 +608,24 @@ async function openProduct(id) {
   state.selectedColor = p.colors && p.colors[0];
 
   document.getElementById('detail-content').innerHTML = `
-    <div class="detail-image">${p.image ? `<img src="${p.image}" style="max-width:100%;max-height:100%;object-fit:contain;">` : '📦'}</div>
+    <div class="detail-image">${p.image ? `<img src="${p.image}" style="max-width:100%;max-height:100%;object-fit:contain;">` : ICON.box.replace('width="26" height="26"','width="64" height="64"')}</div>
     <div class="detail-name">${p.name}</div>
-    <div class="detail-rating">⭐ ${p.rating || '-'} (${p.reviewCount || 0} reviews)</div>
+    <div class="detail-rating">${ICON.star} ${p.rating || '-'} (${p.reviewCount || 0} reviews)</div>
     <div class="detail-price">$${Number(p.price).toFixed(2)}</div>
     <div class="spec-grid">
-      ${p.fastCharge ? `<div class="spec-item">⚡<span class="val">Fast Charge</span></div>` : ''}
-      ${p.pd ? `<div class="spec-item">🔋<span class="val">${p.pd}</span></div>` : ''}
-      ${p.usbPorts ? `<div class="spec-item">🔌<span class="val">${p.usbPorts} USB</span></div>` : ''}
-      ${p.ledDisplay ? `<div class="spec-item">💡<span class="val">LED</span></div>` : ''}
+      ${p.fastCharge ? `<div class="spec-item">${ICON.lightning}<span class="val">Fast Charge</span></div>` : ''}
+      ${p.pd ? `<div class="spec-item">${ICON.powerbank.replace(/width="22" height="22"/,'width="16" height="16"')}<span class="val">${p.pd}</span></div>` : ''}
+      ${p.usbPorts ? `<div class="spec-item">${ICON.charger.replace(/width="22" height="22"/,'width="16" height="16"')}<span class="val">${p.usbPorts} USB</span></div>` : ''}
+      ${p.ledDisplay ? `<div class="spec-item">${ICON.lightning}<span class="val">LED</span></div>` : ''}
     </div>
     ${p.colors && p.colors.length ? `
     <div class="section-title" style="margin-top:0;">Color</div>
     <div class="swatch-row" id="swatches">
-      ${p.colors.map((c,i) => `<div class="swatch ${i===0?'selected':''}" data-color="${c}" style="background:${swatchColor(c)}" onclick="selectColor(this,'${c}')"></div>`).join('')}
+      ${p.colors.map((c,i) => `<div class="swatch ${i===0?'selected':''}" data-color="${c}" onclick="selectColor(this,'${c}')">${c}</div>`).join('')}
     </div>` : ''}
-    <p style="font-size:13px; color:var(--gray-text); margin-bottom:20px;">${p.description || ''}</p>
-    <button class="btn-red" onclick="addToCart()">Add to Cart</button>
+    <p style="font-size:13px; color:var(--ink-soft); line-height:1.6; margin-bottom:22px;">${p.description || ''}</p>
+    <button class="btn-red" onclick="addToCart()">${ICON.cart} Add to Cart</button>
   `;
-}
-function swatchColor(name) {
-  const map = { Black:'#222', White:'#eee', Blue:'#3b82f6', Red:'#e8272c', Silver:'#c0c0c0' };
-  return map[name] || '#ccc';
 }
 function selectColor(el, color) {
   document.querySelectorAll('#swatches .swatch').forEach(s => s.classList.remove('selected'));
@@ -609,16 +667,16 @@ function renderCart() {
   const subtotal = state.cart.reduce((s,i)=>s+i.qty*i.unitPrice,0);
   c.innerHTML = state.cart.map((item, idx) => `
     <div class="cart-item">
-      <div class="product-thumb" style="display:flex;align-items:center;justify-content:center;">${item.image ? `<img src="${item.image}" style="width:100%;height:100%;object-fit:contain;">` : '📦'}</div>
+      <div class="product-thumb">${item.image ? `<img src="${item.image}">` : ICON.box}</div>
       <div class="cart-item-info">
         <div class="name">${item.productName}</div>
         ${item.color ? `<div class="variant">${item.color}</div>` : ''}
         <div class="price">$${item.unitPrice.toFixed(2)}</div>
       </div>
       <div class="qty-control">
-        <button onclick="changeQty(${idx}, -1)">−</button>
+        <button onclick="changeQty(${idx}, -1)" aria-label="Decrease">${ICON.minus}</button>
         <span>${item.qty}</span>
-        <button onclick="changeQty(${idx}, 1)">+</button>
+        <button onclick="changeQty(${idx}, 1)" aria-label="Increase">${ICON.plus}</button>
       </div>
     </div>
   `).join('') + `
@@ -727,7 +785,7 @@ async function showPaymentInstructions(order) {
       <input id="f-payref" placeholder="e.g. last 4 digits, receipt no.">
     </div>
     <button class="btn-red" onclick="confirmIvePaid()">I've Paid</button>
-    <button class="btn-red" style="background:#fff; color:var(--red); border:1px solid var(--red); margin-top:10px;" onclick="renderConfirm(state.currentOrder); goTo('confirm');">I'll Pay Later</button>
+    <button class="btn-red" style="background:#fff; color:var(--accent); border:1.5px solid var(--accent); margin-top:10px;" onclick="renderConfirm(state.currentOrder); goTo('confirm');">I'll Pay Later</button>
   `;
 }
 
@@ -746,7 +804,7 @@ function renderConfirm(order) {
   const statusLabel = order.paymentStatus || (state.paymentMethod === 'Cash on Delivery' ? 'Pending (pay on delivery)' : 'Awaiting Payment');
   document.getElementById('confirm-content').innerHTML = `
     <div class="confirm-box">
-      <div class="check-circle">✓</div>
+      <div class="check-circle">${ICON.check}</div>
       <h2>Order Confirmed!</h2>
       <p>Thank you for your purchase.<br>Your order has been placed successfully.</p>
       <div class="receipt">
@@ -757,7 +815,7 @@ function renderConfirm(order) {
         <div class="receipt-row"><span>Estimated Delivery</span><span>${state.deliveryFee>0?'1-2 days':'3-5 days'}</span></div>
       </div>
       <button class="btn-red" onclick="goTo('orders')">View Order Details</button>
-      <button class="btn-red" style="background:#fff; color:var(--red); border:1px solid var(--red); margin-top:10px;" onclick="backToHomeAfterOrder()">Back to Home</button>
+      <button class="btn-red" style="background:#fff; color:var(--accent); border:1.5px solid var(--accent); margin-top:10px;" onclick="backToHomeAfterOrder()">Back to Home</button>
     </div>
   `;
 }
@@ -786,14 +844,14 @@ function renderOrders(status) {
         <span class="id">#${o.orderId}</span>
         <span class="status-pill status-${o.status}">${o.status}</span>
       </div>
-      <div style="margin-bottom:6px;">
+      <div style="margin-bottom:8px;">
         <span class="payment-status-pill payment-status-${(o.paymentStatus||'Pending').replace(/\s+/g,'')}">${o.paymentStatus || 'Pending'}</span>
       </div>
       <div class="order-thumbs">
         ${o.items.slice(0,4).map(it => {
           const prod = state.products.find(p => p.id === it.productId);
           const img = prod && prod.image;
-          return `<div class="product-thumb" style="display:flex;align-items:center;justify-content:center;font-size:18px;">${img ? `<img src="${img}" style="width:100%;height:100%;object-fit:contain;">` : '📦'}</div>`;
+          return `<div class="product-thumb">${img ? `<img src="${img}">` : ICON.box.replace(/width="26" height="26"/,'width="18" height="18"')}</div>`;
         }).join('')}
       </div>
       <div class="order-meta">
