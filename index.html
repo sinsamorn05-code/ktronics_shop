@@ -499,9 +499,11 @@ document.getElementById('splash-features').innerHTML = [
       }
     }
   } catch(e) { /* not running inside Telegram; fine for browser testing */ }
+  const verified = !!state.customerName;
   if (!state.telegramUserId) state.telegramUserId = 'test-user-local';
   document.getElementById('profile-name').textContent = state.customerName || 'Guest';
   document.getElementById('profile-initial').textContent = (state.customerName || 'G')[0].toUpperCase();
+  document.getElementById('profile-phone').textContent = verified ? 'Verified via Telegram' : 'Open this from the K-TRONiCS Telegram bot to identify yourself';
 })();
 
 function openSupportChat(username, orderId) {
