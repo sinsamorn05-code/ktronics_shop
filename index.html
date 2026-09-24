@@ -353,9 +353,7 @@
         <div class="step"><div class="dot">3</div>Confirm</div>
       </div>
       <div class="section-title" style="margin-top:0;">Payment Method</div>
-      <div class="radio-card selected" onclick="selectPayment(this,'Bank Transfer')"><div class="radio-dot"></div> Bank Transfer</div>
-      <div class="radio-card" onclick="selectPayment(this,'KHQR')"><div class="radio-dot"></div> KHQR</div>
-      <div class="radio-card" onclick="selectPayment(this,'Cash on Delivery')"><div class="radio-dot"></div> Cash on Delivery</div>
+      <div class="radio-card selected" onclick="selectPayment(this,'KHQR')"><div class="radio-dot"></div> KHQR</div>
       <div class="form-group" style="margin-top:16px;">
         <label>Promo Code</label>
         <div style="display:flex; gap:8px;">
@@ -367,7 +365,7 @@
     </div>
   </section>
 
-  <!-- ===== PAYMENT INSTRUCTIONS (Bank Transfer / KHQR) ===== -->
+  <!-- ===== PAYMENT INSTRUCTIONS (KHQR) ===== -->
   <section class="screen" id="screen-payinstructions">
     <div class="topbar"><div class="brand">Complete Payment</div></div>
     <div style="padding-top:16px;" id="payinstructions-content"></div>
@@ -462,7 +460,7 @@ let state = {
   currentProduct: null,
   selectedColor: null,
   deliveryFee: 0,
-  paymentMethod: 'Bank Transfer',
+  paymentMethod: 'KHQR',
   telegramUserId: null,
   customerName: '',
   orders: [],
@@ -505,6 +503,16 @@ document.getElementById('splash-features').innerHTML = [
   document.getElementById('profile-name').textContent = state.customerName || 'Guest';
   document.getElementById('profile-initial').textContent = (state.customerName || 'G')[0].toUpperCase();
 })();
+
+function openSupportChat(username, orderId) {
+  if (!username) return;
+  const link = 'https://t.me/' + username;
+  try {
+    const tg = window.Telegram && window.Telegram.WebApp;
+    if (tg && tg.openTelegramLink) { tg.openTelegramLink(link); return; }
+  } catch(e) { /* fall through to plain link below */ }
+  window.open(link, '_blank');
+}
 
 /* ====================== API ====================== */
 async function apiGet(action, params) {
@@ -735,13 +743,8 @@ async function placeOrder() {
   state.cart = [];
   updateCartBadge();
 
-  if (state.paymentMethod === 'Cash on Delivery') {
-    renderConfirm(result);
-    goTo('confirm');
-  } else {
-    await showPaymentInstructions(result);
-    goTo('payinstructions');
-  }
+  await showPaymentInstructions(result);
+  goTo('payinstructions');
 }
 
 /* ====================== PAYMENT INSTRUCTIONS ====================== */
@@ -753,24 +756,26 @@ async function showPaymentInstructions(order) {
   const el = document.getElementById('payinstructions-content');
 
   let methodBlock = '';
-  if (state.paymentMethod === 'Bank Transfer') {
-    if (s.bankName || s.bankAccountNumber) {
-      methodBlock = `
-        <div class="pay-card">
-          <div class="row"><span>Bank</span><span>${s.bankName || '—'}</span></div>
-          <div class="row"><span>Account Name</span><span>${s.bankAccountName || '—'}</span></div>
-          <div class="row"><span>Account Number</span><span>${s.bankAccountNumber || '—'}</span></div>
-        </div>`;
-    } else {
-      methodBlock = `<div class="pay-missing">Bank details haven't been set up yet. Please contact K-TRONiCS on Telegram to arrange payment for this order.</div>`;
-    }
-  } else if (state.paymentMethod === 'KHQR') {
-    if (s.khqrImageUrl) {
-      methodBlock = `<div class="qr-box"><img src="${s.khqrImageUrl}" alt="KHQR code"></div>`;
-    } else {
-      methodBlock = `<div class="pay-missing">KHQR code hasn't been set up yet. Please contact K-TRONiCS on Telegram to arrange payment for this order.</div>`;
-    }
+  if (s.khqrImageUrl) {
+    methodBlock = `
+      <div class="qr-box"><img src="${s.khqrImageUrl}" alt="KHQR code"></div>
+      <p class="pay-note" style="margin-top:-8px;">Can't scan straight from this screen? Press and hold the QR code above to save it, then open your banking app and use "Scan from Photo/Gallery" to pay from the saved image.</p>
+      ${(s.bankName || s.bankAccountNumber) ? `
+      <div style="font-size:12px;font-weight:700;color:#4A4438;margin:4px 0 8px;">Or transfer manually</div>
+      <div class="pay-card">
+        <div class="row"><span>Bank</span><span>${s.bankName || '—'}</span></div>
+        <div class="row"><span>Account Name</span><span>${s.bankAccountName || '—'}</span></div>
+        <div class="row"><span>Account Number</span><span>${s.bankAccountNumber || '—'}</span></div>
+      </div>` : ''}
+    `;
+  } else {
+    methodBlock = `<div class="pay-missing">KHQR code hasn't been set up yet.${s.telegramSupportUsername ? ' Please use the "Chat with us on Telegram" button below to arrange payment for this order.' : ' Please contact K-TRONiCS on Telegram to arrange payment for this order.'}</div>`;
   }
+
+  const chatBlock = s.telegramSupportUsername ? `
+    <button class="btn-red" style="background:#fff; color:#1A1712; border:1.5px solid #ECE7DE; display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:14px;" onclick="openSupportChat('${s.telegramSupportUsername}', '${order.orderId}')">
+      ${ICON.send}<span>Chat with us on Telegram to confirm</span>
+    </button>` : '';
 
   el.innerHTML = `
     <div class="pay-amount">$${order.total.toFixed(2)}</div>
@@ -779,18 +784,20 @@ async function showPaymentInstructions(order) {
       <div class="row"><span>Payment Method</span><span>${state.paymentMethod}</span></div>
     </div>
     ${methodBlock}
-    <p class="pay-note">Transfer the exact amount above, then tap the button below once you've paid. We'll confirm it shortly after.</p>
+    <p class="pay-note">Transfer the exact amount above. <strong>Important:</strong> write your Order No. (<strong>#${order.orderId}</strong>) as the transfer note/remark in your banking app — this is how we match your payment to your order. Then tap the button below once you've paid.</p>
     <div class="form-group">
-      <label>Transaction Reference (optional)</label>
-      <input id="f-payref" placeholder="e.g. last 4 digits, receipt no.">
+      <label>Order No. or Transaction Reference <span style="color:var(--accent);">*</span></label>
+      <input id="f-payref" placeholder="e.g. ${order.orderId} or last 4 digits" value="${order.orderId}">
     </div>
     <button class="btn-red" onclick="confirmIvePaid()">I've Paid</button>
-    <button class="btn-red" style="background:#fff; color:var(--accent); border:1.5px solid var(--accent); margin-top:10px;" onclick="renderConfirm(state.currentOrder); goTo('confirm');">I'll Pay Later</button>
+    <button class="btn-red" style="background:#fff; color:var(--accent); border:1.5px solid var(--accent); margin-top:10px; margin-bottom:14px;" onclick="renderConfirm(state.currentOrder); goTo('confirm');">I'll Pay Later</button>
+    ${chatBlock}
   `;
 }
 
 async function confirmIvePaid() {
   const reference = document.getElementById('f-payref').value.trim();
+  if (!reference) { showToast('Please enter your Order No. or transfer reference'); return; }
   const res = await apiPost('submitPaymentReference', { orderId: state.currentOrder.orderId, reference });
   if (res.error) { showToast('Error: ' + res.error); return; }
   state.currentOrder.paymentStatus = res.paymentStatus;
@@ -801,7 +808,7 @@ async function confirmIvePaid() {
 /* ====================== ORDER CONFIRMATION ====================== */
 function renderConfirm(order) {
   const statusKey = (order.paymentStatus || 'Pending').replace(/\s+/g, '');
-  const statusLabel = order.paymentStatus || (state.paymentMethod === 'Cash on Delivery' ? 'Pending (pay on delivery)' : 'Awaiting Payment');
+  const statusLabel = order.paymentStatus || 'Awaiting Payment';
   document.getElementById('confirm-content').innerHTML = `
     <div class="confirm-box">
       <div class="check-circle">${ICON.check}</div>
